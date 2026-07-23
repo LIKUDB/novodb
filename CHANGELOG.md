@@ -1,57 +1,24 @@
 # Changelog
 
-## [Unreleased] — configs/novodb.conf y primer subpaquete (parse/)
+## [Unreleased] — configs/novodb.conf and first subpackage (parse/)
 
-- `novodb.conf` ahora se carga/crea en `configs/novodb.conf` en vez
-  de la raíz del directorio de trabajo (`internal/novodb/constants.go`,
-  `internal/novodb/defaults.go`); `SaveToFile` crea la carpeta
-  `configs/` sola si hace falta. Actualizados `help.go`, `README.md`,
-  `docs/configuration.md`, `docs/architecture.md`,
-  `examples/quickstart.md` y `.gitignore` para reflejarlo.
-- Nuevo subpaquete `internal/novodb/parse`: se movió el tokenizer de
-  la sintaxis NQL (`tokenize` → `parse.Tokenize`), el único archivo
-  del motor sin ninguna dependencia de `Engine`/`Document`/`Config`/
-  `Session`/`Filter`/`Transaction`. `dsl_parser.go` y `cmd_view.go`
-  ahora lo importan como `novodb/internal/novodb/parse`.
-- `docs/known-limitations.md` ampliado: documenta este primer split
-  seguro, incluye un filtro `grep` para encontrar más archivos "hoja"
-  candidatos, y mantiene la ruta recomendada (`httpapi`, `cluster`,
-  dejar `raft_fsm.go`/`transaction.go` en el núcleo) para quien
-  quiera seguir dividiendo el paquete con un compilador Go a mano.
+- `novodb.conf` now loads/creates from `configs/novodb.conf` instead of the working directory root (`internal/novodb/constants.go`, `internal/novodb/defaults.go`); `SaveToFile` creates the `configs/` folder on its own if needed. Updated `help.go`, `README.md`, `docs/configuration.md`, `docs/architecture.md`, `examples/quickstart.md`, and `.gitignore` to reflect this.
+- New subpackage `internal/novodb/parse`: moved the NQL syntax tokenizer (`tokenize` → `parse.Tokenize`), the only engine file without any dependency on `Engine`/`Document`/`Config`/`Session`/`Filter`/`Transaction`. `dsl_parser.go` and `cmd_view.go` now import it as `novodb/internal/novodb/parse`.
+- `docs/known-limitations.md` expanded: documents this first safe split, includes a `grep` filter to find more "leaf" file candidates, and maintains the recommended path (`httpapi`, `cluster`, keep `raft_fsm.go`/`transaction.go` in the core) for anyone wanting to continue splitting the package with a Go compiler available.
 
-## [Unreleased] — Reorganización del repositorio
+## [Unreleased] — Repository Reorganization
 
-- Nueva estructura de carpetas a nivel de repo: `docs/` (con
-  `docs/api/`), `deployments/docker/`, `scripts/`, `configs/`,
-  `examples/`, `test/` (con `test/integration/` y `test/fixtures/`),
-  `.github/workflows/`.
-- Documentación nueva: arquitectura (`docs/architecture.md`),
-  referencia NQL completa (`docs/nql-reference.md`), API HTTP
-  (`docs/api/http-api.md`), configuración (`docs/configuration.md`),
-  limitaciones conocidas (`docs/known-limitations.md`).
-- Plantilla de configuración (`configs/novodb.conf.example`) generada
-  a partir del struct `Config` real.
-- `Dockerfile` + `docker-compose.yml` para levantar NovoDB en
-  contenedor.
-- Scripts de build/test/run (`scripts/*.sh`) y `Makefile`.
-- Workflow de CI en GitHub Actions (`go build`, `go vet`, `go test`,
-  `go mod tidy` check).
-- `internal/novodb` se dejó intacto a propósito: es un único paquete
-  Go con más de 40 archivos acoplados al mismo `Engine` mediante
-  campos no exportados; dividirlo de verdad requiere exportar buena
-  parte de ese estado y verificarlo con un compilador, algo que no
-  fue posible confirmar en este entorno (ver
-  `docs/known-limitations.md`).
+- New repository-level folder structure: `docs/` (with `docs/api/`), `deployments/docker/`, `scripts/`, `configs/`, `examples/`, `test/` (with `test/integration/` and `test/fixtures/`), `.github/workflows/`.
+- New documentation: architecture (`docs/architecture.md`), complete NQL reference (`docs/nql-reference.md`), HTTP API (`docs/api/http-api.md`), configuration (`docs/configuration.md`), known limitations (`docs/known-limitations.md`).
+- Configuration template (`configs/novodb.conf.example`) generated from the actual `Config` struct.
+- `Dockerfile` + `docker-compose.yml` to run NovoDB in a container.
+- Build/test/run scripts (`scripts/*.sh`) and `Makefile`.
+- GitHub Actions CI workflow (`go build`, `go vet`, `go test`, `go mod tidy` check).
+- `internal/novodb` was intentionally left intact: it's a single Go package with over 40 files coupled to the same `Engine` via unexported fields; truly splitting it requires exporting a significant portion of that state and verifying with a compiler, which wasn't possible to confirm in this environment (see `docs/known-limitations.md`).
 
-## Pase anterior — Corrección de compilación
+## Previous Pass — Compilation Fixes
 
-- Estructura `cmd/` + `internal/novodb/` en vez de un directorio
-  plano de 68 archivos en la raíz.
-- Eliminada la redeclaración duplicada de `views`/`viewsMu`.
-- Implementados 11 manejadores NQL que `dsl_parser.go` referenciaba
-  pero no existían (`handleDrop`, `handleRename`, `handleInfo`,
-  `handleDescribe`, `handleStats`, `handleSize`, `handleRebuild`,
-  `handleCheck`, `handleRepair`, `handleFlexCommand`,
-  `handleTransaction`), en `cmd_admin_extra.go`.
-- Eliminados imports no usados de `github.com/hashicorp/raft` y
-  `errors` en 11 archivos.
+- `cmd/` + `internal/novodb/` structure instead of a flat directory of 68 files at the root.
+- Removed duplicate redeclaration of `views`/`viewsMu`.
+- Implemented 11 NQL handlers that `dsl_parser.go` referenced but didn't exist (`handleDrop`, `handleRename`, `handleInfo`, `handleDescribe`, `handleStats`, `handleSize`, `handleRebuild`, `handleCheck`, `handleRepair`, `handleFlexCommand`, `handleTransaction`), in `cmd_admin_extra.go`.
+- Removed unused imports of `github.com/hashicorp/raft` and `errors` in 11 files.
