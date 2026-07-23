@@ -2,11 +2,6 @@
 
 Document-oriented data engine with sharding, Raft-based clustering, WAL, ACID transactions, and an SQL-like command language (NQL).
 
-## Wiki
-
-- 🇪🇸 [Español](https://github.com/novodb/novodb/wiki/es)
-- 🇬🇧 [English](https://github.com/novodb/novodb/wiki/en)
-- 🇩🇪 [Deutsch](https://github.com/novodb/novodb/wiki/de)
 
 ## Repository Structure
 
