@@ -1,0 +1,18 @@
+services:
+  novodb:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile
+    ports:
+      - "1555:1555"   # query server
+      - "1556:1556"   # admin API
+      - "9090:9090"   # prometheus metrics
+      - "2335:2335"   # raft
+    environment:
+      NOVODB_DATA: /app/data
+      NOVODB_LOG_LEVEL: info
+    volumes:
+      - novodb-data:/app/data
+
+volumes:
+  novodb-data:
