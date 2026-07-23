@@ -1,9 +1,13 @@
-Todavía no se ha elegido una licencia para este proyecto.
+Copyright 2026 Contribuidores de NovoDB
 
-El código fuente original no incluía un archivo de licencia, así que
-no se ha asumido ninguna en este pase de reorganización (esto no es
-una decisión que se deba tomar por ti). Cuando decidas cómo quieres
-licenciarlo, reemplaza este archivo por el texto de la licencia
-elegida — por ejemplo MIT, Apache-2.0 o "todos los derechos
-reservados / propietario" si prefieres mantenerlo cerrado. Herramienta
-útil para elegir: https://choosealicense.com/
+Licenciado bajo la Licencia Apache, Versión 2.0 (la "Licencia");
+no puede usar este archivo excepto en cumplimiento con la Licencia.
+Puede obtener una copia de la Licencia en
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+A menos que lo requiera la ley aplicable o se acuerde por escrito, el
+software distribuido bajo la Licencia se distribuye "TAL CUAL",
+SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ya sean expresas o implícitas.
+Vea la Licencia para el lenguaje específico que rige los permisos y
+limitaciones bajo la Licencia.
