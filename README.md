@@ -1,32 +1,36 @@
 # NovoDB
 
-Motor de datos orientado a documentos con sharding, clustering basado
-en Raft, WAL, transacciones ACID y un lenguaje de comandos tipo SQL
-(NQL).
+Document-oriented data engine with sharding, Raft-based clustering, WAL, ACID transactions, and an SQL-like command language (NQL).
 
-## Estructura del repositorio
+## Wiki
+
+- 🇪🇸 [Español](https://github.com/novodb/novodb/wiki/es)
+- 🇬🇧 [English](https://github.com/novodb/novodb/wiki/en)
+- 🇩🇪 [Deutsch](https://github.com/novodb/novodb/wiki/de)
+
+## Repository Structure
 
 ```
 novodb/
 ├── cmd/
-│   └── novodb/              # punto de entrada (func main), delega todo a internal/novodb.Run()
+│   └── novodb/              # entry point (func main)
 ├── internal/
-│   └── novodb/               # motor, servidor y CLI (paquete Go único — ver docs/known-limitations.md)
-│       └── parse/            # tokenizer de la sintaxis NQL (único subpaquete separado hoy)
+│   └── novodb/               # engine, server, and CLI (single Go package)
+│       └── parse/            # NQL syntax tokenizer
 ├── configs/
-│   ├── novodb.conf.example   # plantilla de configuración (JSON)
-│   └── novodb.conf           # config activa; se crea aquí sola en el primer arranque
+│   ├── novodb.conf.example   # configuration template (JSON)
+│   └── novodb.conf           # active config; auto-created on first startup
 ├── deployments/
 │   └── docker/
 │       ├── Dockerfile
 │       └── docker-compose.yml
 ├── docs/
-│   ├── architecture.md       # mapa completo del código y del almacenamiento en disco
-│   ├── configuration.md      # archivo de config + variables de entorno
-│   ├── nql-reference.md      # referencia de comandos NQL
-│   ├── known-limitations.md  # por qué internal/novodb sigue siendo un solo paquete
+│   ├── architecture.md
+│   ├── configuration.md
+│   ├── nql-reference.md
+│   ├── known-limitations.md
 │   └── api/
-│       └── http-api.md       # endpoints de los dos servidores HTTP
+│       └── http-api.md
 ├── examples/
 │   └── quickstart.md
 ├── scripts/
@@ -45,82 +49,48 @@ novodb/
 └── go.mod
 ```
 
-Ver [`docs/architecture.md`](docs/architecture.md) para el detalle de
-qué hace cada archivo dentro de `internal/novodb`.
-
-## Compilar y ejecutar
+## Build and Run
 
 ```bash
 go build ./cmd/novodb
 ./novodb
 ```
 
-o con las utilidades incluidas:
+or with the included utilities:
 
 ```bash
 make build   # ./scripts/build.sh -> bin/novodb
-make run     # ./scripts/run-dev.sh (modo desarrollo, ./data-dev)
+make run     # ./scripts/run-dev.sh (development mode, ./data-dev)
 make test    # go build + go vet + go test
-make docker  # build de la imagen Docker
+make docker  # build Docker image
 ```
 
-Guía paso a paso: [`examples/quickstart.md`](examples/quickstart.md).
+## Configuration
 
-## Configuración
+`configs/novodb.conf` (JSON), relative to the working directory, with overrides via environment variables (`NOVODB_*`). If it doesn't exist, NovoDB auto-creates it with default values. Full details in [`docs/configuration.md`](docs/configuration.md); template at [`configs/novodb.conf.example`](configs/novodb.conf.example).
 
-`configs/novodb.conf` (JSON), relativo al directorio de trabajo, con
-overrides por variable de entorno (`NOVODB_*`). Si no existe, NovoDB
-lo crea solo (y crea la carpeta `configs/` si hace falta) con los
-valores por defecto. Detalle completo en
-[`docs/configuration.md`](docs/configuration.md); plantilla en
-[`configs/novodb.conf.example`](configs/novodb.conf.example).
+## Changelog
 
-## Por qué `internal/novodb` no se dividió (casi) en más paquetes Go
+See [`CHANGELOG.md`](CHANGELOG.md) for the complete history.
 
-Es la carpeta con más archivos (69) y la razón por la que a primera
-vista el repo puede parecer "plano". Se investigó en profundidad
-partirla en subpaquetes (`internal/engine`, `internal/storage`,
-`internal/cluster`...), pero el análisis estático mostró un
-acoplamiento real y profundo: más de 40 archivos acceden directamente
-a campos no exportados del `Engine` central, y varios subsistemas
-(cluster, HTTP, transacciones) guardan una referencia de vuelta al
-propio `Engine`, lo que generaría ciclos de imports si se separan sin
-más. Hacerlo bien exige exportar buena parte del estado interno y
-verificar cada punto de uso con un compilador — algo que no fue
-posible confirmar en este entorno (sin Go instalado ni red).
+## Contributing
 
-La única excepción es `internal/novodb/parse`: el tokenizer de la
-sintaxis NQL (`tokenize`, ahora `parse.Tokenize`) no tocaba ningún
-tipo del motor (`Engine`, `Document`, `Config`, `Session`, `Filter`,
-`Transaction`), así que se pudo mover de verdad sin arriesgar nada.
-Es exactamente el tipo de archivo "hoja" que describe la ruta
-recomendada en `docs/known-limitations.md` para seguir avanzando.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for guidelines.
 
-Detalle completo, con la lista exacta de qué se investigó y una ruta
-recomendada para hacerlo con un compilador a mano:
-[`docs/known-limitations.md`](docs/known-limitations.md).
+## License
 
-Todo lo demás en este repositorio (la reorganización de carpetas,
-`docs/`, `deployments/`, `scripts/`, `configs/`, `examples/`, `test/`,
-CI) no toca ni un archivo `.go` de `internal/novodb`, así que no
-introduce ningún riesgo nuevo sobre el código que ya compilaba.
+Apache License, Version 2.0. See [`LICENSE`](LICENSE) for details.
 
-## Historial de cambios
+---
 
-Ver [`CHANGELOG.md`](CHANGELOG.md) — incluye tanto este pase de
-reorganización como el pase anterior que arregló los errores de
-compilación originales (declaraciones duplicadas, handlers NQL
-faltantes, imports sin usar).
+## Pending Verification
 
-## Verificación pendiente
-
-**Este entorno no tuvo acceso a un compilador de Go ni a red.**
-Antes de confiar en este código, en una máquina con Go 1.22+:
+**This environment had no access to a Go compiler or network.** Before trusting this code, on a machine with Go 1.22+:
 
 ```bash
 go build ./...
 go vet ./...
-go mod tidy   # y confirma que go.sum queda consistente
+go mod tidy   # and confirm go.sum is consistent
 ```
 
-Si algo falla, es el primer sitio por dónde seguir.
+If anything fails, that's the first place to start.
